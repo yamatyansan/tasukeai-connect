@@ -1,0 +1,88 @@
+import React, { useState } from 'react';
+import { User } from '../types';
+
+interface LoginProps {
+  onLogin: (userId: string, password: string) => void;
+  loginError?: string;
+}
+
+const Login: React.FC<LoginProps> = ({ onLogin, loginError }) => {
+  const [userId, setUserId] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onLogin(userId, password);
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-100 px-4">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="flex justify-center mb-4">
+            <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white text-3xl shadow-lg">
+              🤝
+            </div>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-800 mb-2">Tasukeai Connect</h1>
+          <p className="text-slate-500 text-sm">社内人材公募システム</p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {loginError && (
+            <div className="bg-red-50 border border-red-200 text-red-600 text-sm p-3 rounded-lg text-center">
+              {loginError}
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">職員ID</label>
+            <input
+              type="text"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all uppercase"
+              placeholder="例: NS001"
+              value={userId}
+              onChange={(e) => setUserId(e.target.value.toUpperCase())}
+              autoFocus
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">パスワード</label>
+            <input
+              type="password"
+              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+              placeholder="パスワードを入力"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition-colors shadow-md mt-2"
+          >
+            ログイン
+          </button>
+          
+          <div className="mt-8 pt-6 border-t border-slate-100">
+             <p className="text-xs text-center text-slate-400 mb-3">デモ用アカウント (初期PW: 0000/admin)</p>
+             <div className="grid grid-cols-3 gap-2">
+                 <button type="button" onClick={() => {setUserId('ADM001'); setPassword('admin');}} className="p-2 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 text-xs text-slate-600 font-medium transition-colors">
+                    人事管理者<br/>(ADM001)
+                 </button>
+                 <button type="button" onClick={() => {setUserId('NS001'); setPassword('0000');}} className="p-2 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 text-xs text-slate-600 font-medium transition-colors">
+                    看護師<br/>(NS001)
+                 </button>
+                 <button type="button" onClick={() => {setUserId('AS001'); setPassword('0000');}} className="p-2 bg-slate-50 hover:bg-slate-100 rounded border border-slate-200 text-xs text-slate-600 font-medium transition-colors">
+                    看護助手<br/>(AS001)
+                 </button>
+             </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Login;

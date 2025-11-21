@@ -1,0 +1,105 @@
+import React from 'react';
+import { Shift, ShiftStatus, UserRole, Department, JobRole } from '../types';
+
+interface ShiftCardProps {
+  shift: Shift;
+  userRole: UserRole;
+  onApply?: (id: string) => void;
+  onDelete?: (id: string) => void;
+}
+
+const DepartmentBadge: React.FC<{ department: Department }> = ({ department }) => {
+  const colors: Record<string, string> = {
+    [Department.WARD_2A]: 'bg-pink-100 text-pink-800 border-pink-200',
+    [Department.WARD_3A]: 'bg-purple-100 text-purple-800 border-purple-200',
+    [Department.WARD_3B]: 'bg-blue-100 text-blue-800 border-blue-200',
+    [Department.WARD_4A]: 'bg-orange-100 text-orange-800 border-orange-200',
+    [Department.OTHER]: 'bg-gray-100 text-gray-800 border-gray-200',
+  };
+
+  return (
+    <span className={`text-xs px-2 py-1 rounded-full border font-medium ${colors[department] || 'bg-gray-100 text-gray-800'}`}>
+      {department}
+    </span>
+  );
+};
+
+const JobRoleBadge: React.FC<{ role: JobRole }> = ({ role }) => {
+  const isNurse = role === JobRole.NURSE;
+  return (
+    <span className={`text-xs px-2 py-1 rounded font-bold ml-2 ${
+      isNurse ? 'bg-indigo-600 text-white' : 'bg-teal-600 text-white'
+    }`}>
+      {role}
+    </span>
+  );
+};
+
+const ShiftCard: React.FC<ShiftCardProps> = ({ shift, userRole, onApply, onDelete }) => {
+  const isApplied = shift.applicantIds.length > 0; 
+
+  return (
+    <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md transition-shadow duration-300 flex flex-col">
+      <div className="p-5 flex-1">
+        <div className="flex justify-between items-start mb-3">
+          <div>
+            <DepartmentBadge department={shift.department} />
+            <JobRoleBadge role={shift.jobRole} />
+          </div>
+          <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">
+            +{shift.hourlyRateBoost}円/時
+          </span>
+        </div>
+        
+        <h3 className="text-lg font-bold text-slate-800 mb-2 line-clamp-2">{shift.title}</h3>
+        
+        <div className="space-y-2 mb-4">
+          <div className="flex items-center text-sm text-slate-600">
+            <span className="w-5 text-center mr-2">📅</span>
+            {shift.date}
+          </div>
+          <div className="flex items-center text-sm text-slate-600">
+            <span className="w-5 text-center mr-2">⏰</span>
+            {shift.startTime} - {shift.endTime}
+          </div>
+        </div>
+
+        <p className="text-sm text-slate-500 mb-4 line-clamp-3 bg-slate-50 p-2 rounded text-xs">
+          {shift.description}
+        </p>
+      </div>
+
+      <div className="p-4 bg-slate-50 border-t border-slate-100 flex gap-2">
+        {userRole === UserRole.EMPLOYEE && (
+          <button
+            onClick={() => onApply && onApply(shift.id)}
+            disabled={isApplied || shift.status === ShiftStatus.FILLED}
+            className={`flex-1 py-2 rounded-lg font-semibold text-sm transition-colors ${
+              isApplied
+                ? 'bg-green-100 text-green-700 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm'
+            }`}
+          >
+            {isApplied ? '応募済み' : 'この業務に応募する'}
+          </button>
+        )}
+
+        {userRole === UserRole.HR_ADMIN && (
+          <>
+            <div className="flex-1 text-xs text-slate-500 flex items-center">
+              応募者: <span className="font-bold ml-1 text-slate-800">{shift.applicantIds.length}名</span>
+            </div>
+             <button
+              onClick={() => onDelete && onDelete(shift.id)}
+              className="px-3 py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 text-xs font-medium"
+            >
+              削除
+            </button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ShiftCard;

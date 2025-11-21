@@ -1,0 +1,5 @@
+{
+  "name": "タスケアイ・コネクト (Tasukeai Connect)",
+  "description": "An internal staffing marketplace application allowing HR to post short-term shifts and employees to apply. Features an AI HR Specialist for generating regulation drafts and management advice.",
+  "requestFramePermissions": []
+}
